@@ -1,3 +1,13 @@
+openapi: 3.0.3
+info:
+  title: Library API
+  version: 1.1.0
+  description: STD22001
+servers:
+  - url: https://library.com
+tags:
+  - Books
+  - Authors
 paths:
   /books:
     get:
@@ -51,11 +61,80 @@ paths:
                 items:
                   $ref: '#/components/schemas/Book'
 
+  /authors:
+    get:
+      tags:
+        - Authors
+      summary: Get all authors with pagination
+      description: Retrieve a list of authors with pagination support.
+      operationId: getAuthors
+      parameters:
+        - in: query
+          name: authorName
+          description: Filter authors by name
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: page
+          description: Page number for pagination
+          required: false
+          schema:
+            type: integer
+            default: 1  # Valeur par défaut de la page si aucune n'est fournie
+        - in: query
+          name: pageSize
+          description: Number of items per page
+          required: false
+          schema:
+            type: integer
+            default: 50  # Valeur par défaut de pageSize si aucune n'est fournie
+      responses:
+        200:
+          description: The list of filtered authors
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Author'
 
-
-
-#L'objet UpdateBookAuthor contient
-# uniquement les identifiants (bookId et authorId) des ressources CrupdateBook et Author 
-#car il est spécifiquement conçu pour gérer les relations entre ces ressources, sans avoir besoin de spécifier toutes les autres propriétés telles que bookName et authorName. 
-
-#Dans le cas où vous auriez besoin d'inclure les propriétés complètes de CrupdateBook et Author, cela dépendrait des besoins spécifiques de votre application.
+components:
+  schemas:
+    CrupdateBook:
+      type: object
+      properties:
+        ID:
+          type: integer
+        bookName:
+          type: string
+        author:
+          $ref: '#/components/schemas/Author'
+        pageNumbers:
+          type: integer
+        topic:
+          type: string
+          enum:
+            - ROMANCE
+            - COMEDY
+            - OTHER
+        releaseDate:
+          type: string
+          format: date
+    Book:
+      allOf:
+        - $ref: '#/components/schemas/CrupdateBook'
+    Author:
+      type: object
+      properties:
+        id:
+          type: string
+        authorName:
+          type: string
+        sex:
+          $ref: '#/components/schemas/Sex'
+    Sex:
+      type: string
+      enum:
+        - M
+        - F
