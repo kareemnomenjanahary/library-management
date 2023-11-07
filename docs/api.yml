@@ -50,7 +50,7 @@ paths:
             schema:
               type: array
               items:
-                $ref: '#/components/schemas/CrupdateBook'  # Utilisation du nouveau composant "CrupdateBook"
+                $ref: '#/components/schemas/CrupdateBook'
       responses:
         200:
           description: The list of created or updated books
@@ -112,6 +112,45 @@ paths:
       responses:
         204:
           description: Author deleted successfully
+
+  /books/{bookId}/authors/{authorId}:
+    put:
+      summary: Attach an author to a book by specifying their IDs
+      operationId: attachAuthorToBook
+      parameters:
+        - in: path
+          name: bookId
+          description: The ID of the book to update
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - in: path
+          name: authorId
+          description: The ID of the author to attach
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        200:
+          description: Author attached to the book successfully
+
+  /books/authors:
+    put:
+      summary: Attach authors to books using a list of UpdateBookAuthor objects
+      operationId: attachAuthorsToBooks
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/UpdateBookAuthor'
+      responses:
+        200:
+          description: Authors attached to books successfully
+
 components:
   schemas:
     CrupdateBook:  
@@ -133,7 +172,7 @@ components:
           type: string
     Book:
       allOf:
-        - $ref: '#/components/schemas/CrupdateBook'  # Utilisation de l'héritage pour éviter la redondance
+        - $ref: '#/components/schemas/CrupdateBook'
     Author: 
       type: object
       properties:
@@ -146,3 +185,18 @@ components:
           enum:
             - M
             - F
+    UpdateBookAuthor:
+      type: object
+      properties:
+        bookId:
+          type: string
+          format: uuid
+        authorId:
+          type: string
+          format: uuid
+
+
+
+#L'objet UpdateBookAuthor contient
+# uniquement les identifiants (bookId et authorId) des ressources CrupdateBook et Author 
+#car il est spécifiquement conçu pour gérer les relations entre ces ressources, sans avoir besoin de spécifier toutes les autres propriétés telles que bookName et authorName. 
