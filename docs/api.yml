@@ -1,15 +1,10 @@
-openapi: 3.0.3
-info:
-  title: Library API
-  version: 1.1.0 
-  description: STD22001
-servers:
-  - url: https://library.com
 paths:
   /books:
     get:
-      summary: Get all books
-      description: The returned books are ordered by updated datetime.
+      tags:
+        - Books
+      summary: Get all books with pagination
+      description: Retrieve a list of books with pagination support.
       operationId: getBooks
       parameters:
         - in: query
@@ -20,18 +15,32 @@ paths:
             type: string
         - in: query
           name: releaseDateStart
-          description: Filter books by release date start 
+          description: Filter books by release date start
           required: false
           schema:
             type: string
             format: date
         - in: query
           name: releaseDateEnd
-          description: Filter books by release date end 
+          description: Filter books by release date end
           required: false
           schema:
             type: string
             format: date
+        - in: query
+          name: page
+          description: Page number for pagination
+          required: false
+          schema:
+            type: integer
+            default: 1  # Valeur par défaut de la page si aucune n'est fournie
+        - in: query
+          name: pageSize
+          description: Number of items per page
+          required: false
+          schema:
+            type: integer
+            default: 50  # Valeur par défaut de pageSize si aucune n'est fournie
       responses:
         200:
           description: The list of filtered books
@@ -41,162 +50,12 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Book'
-    put:
-      summary: Create or update a list of books
-      operationId: crupdateBooks
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: array
-              items:
-                $ref: '#/components/schemas/CrupdateBook'
-      responses:
-        200:
-          description: The list of created or updated books
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Book'
-  /authors:
-    get:
-      summary: Get all authors 
-      description: Get a list of authors, optionally filtered by name.
-      operationId: getAuthors
-      parameters:
-        - in: query
-          name: authorName
-          description: Filter authors by name
-          required: false
-          schema:
-            type: string
-      responses:
-        200:
-          description: The list of authors
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Author'
-    put:
-      summary: Create or update an author (TODO2)
-      description: Create a new author or update an existing one.
-      operationId: createUpdateAuthor
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Author'
-      responses:
-        200:
-          description: The author has been created or updated successfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Author'
-    delete:
-      summary: Delete an author (TODO2)
-      description: Delete an author by their ID.
-      operationId: deleteAuthor
-      parameters:
-        - in: path
-          name: authorId
-          description: The ID of the author to delete
-          required: true
-          schema:
-            type: string
-            format: uuid
-      responses:
-        204:
-          description: Author deleted successfully
 
-  /books/{bookId}/authors/{authorId}:
-    put:
-      summary: Attach an author to a book by specifying their IDs
-      operationId: attachAuthorToBook
-      parameters:
-        - in: path
-          name: bookId
-          description: The ID of the book to update
-          required: true
-          schema:
-            type: string
-            format: uuid
-        - in: path
-          name: authorId
-          description: The ID of the author to attach
-          required: true
-          schema:
-            type: string
-            format: uuid
-      responses:
-        200:
-          description: Author attached to the book successfully
-
-  /books/authors:
-    put:
-      summary: Attach authors to books using a list of UpdateBookAuthor objects
-      operationId: attachAuthorsToBooks
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: array
-              items:
-                $ref: '#/components/schemas/UpdateBookAuthor'
-      responses:
-        200:
-          description: Authors attached to books successfully
-
-components:
-  schemas:
-    CrupdateBook:  
-      type: object
-      properties:
-        ID:
-          type: integer
-        bookName:
-          type: string
-        pageNumbers:
-          type: integer
-        topic:
-          type: string
-          enum:
-            - ROMANCE
-            - COMEDY
-            - OTHER
-        releaseDate:
-          type: string
-    Book:
-      allOf:
-        - $ref: '#/components/schemas/CrupdateBook'
-    Author: 
-      type: object
-      properties:
-        ID:
-          type: integer
-        Name:
-          type: string
-        Sex:
-          type: string
-          enum:
-            - M
-            - F
-    UpdateBookAuthor:
-      type: object
-      properties:
-        bookId:
-          type: string
-          format: uuid
-        authorId:
-          type: string
-          format: uuid
 
 
 
 #L'objet UpdateBookAuthor contient
 # uniquement les identifiants (bookId et authorId) des ressources CrupdateBook et Author 
 #car il est spécifiquement conçu pour gérer les relations entre ces ressources, sans avoir besoin de spécifier toutes les autres propriétés telles que bookName et authorName. 
+
+#Dans le cas où vous auriez besoin d'inclure les propriétés complètes de CrupdateBook et Author, cela dépendrait des besoins spécifiques de votre application.
