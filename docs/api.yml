@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: Library API
-  version: 1.0.0
+  version: 1.1.0 
   description: STD22001
 servers:
   - url: https://library.com
@@ -19,15 +19,15 @@ paths:
           schema:
             type: string
         - in: query
-          name: releaseDateMin
-          description: Minimum release date
+          name: releaseDateStart
+          description: Filter books by release date start 
           required: false
           schema:
             type: string
             format: date
         - in: query
-          name: releaseDateMax
-          description: Maximum release date
+          name: releaseDateEnd
+          description: Filter books by release date end 
           required: false
           schema:
             type: string
@@ -50,7 +50,7 @@ paths:
             schema:
               type: array
               items:
-                $ref: '#/components/schemas/Book'
+                $ref: '#/components/schemas/CrupdateBook'  # Utilisation du nouveau composant "CrupdateBook"
       responses:
         200:
           description: The list of created or updated books
@@ -62,7 +62,7 @@ paths:
                   $ref: '#/components/schemas/Book'
   /authors:
     get:
-      summary: Get all authors
+      summary: Get all authors 
       description: Get a list of authors, optionally filtered by name.
       operationId: getAuthors
       parameters:
@@ -74,7 +74,7 @@ paths:
             type: string
       responses:
         200:
-          description: The list of filtered authors
+          description: The list of authors
           content:
             application/json:
               schema:
@@ -82,42 +82,45 @@ paths:
                 items:
                   $ref: '#/components/schemas/Author'
     put:
-      summary: Create or update authors
-      operationId: crupdateAuthors
+      summary: Create or update an author (TODO2)
+      description: Create a new author or update an existing one.
+      operationId: createUpdateAuthor
       requestBody:
         content:
           application/json:
             schema:
-              type: array
-              items:
-                $ref: '#/components/schemas/Author'
+              $ref: '#/components/schemas/Author'
       responses:
         200:
-          description: The list of created or updated authors
+          description: The author has been created or updated successfully
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Author'
+                $ref: '#/components/schemas/Author'
     delete:
-      summary: Delete authors
-      operationId: deleteAuthors
+      summary: Delete an author (TODO2)
+      description: Delete an author by their ID.
+      operationId: deleteAuthor
+      parameters:
+        - in: path
+          name: authorId
+          description: The ID of the author to delete
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         204:
-          description: Authors deleted successfully
-
+          description: Author deleted successfully
 components:
   schemas:
-    Book:
+    CrupdateBook:  
       type: object
       properties:
-        id:
-          type: string
+        ID:
+          type: integer
         bookName:
           type: string
-        author:
-          $ref: '#/components/schemas/Author'
         pageNumbers:
           type: integer
         topic:
@@ -128,15 +131,17 @@ components:
             - OTHER
         releaseDate:
           type: string
-          format: date
-    Author:
+    Book:
+      allOf:
+        - $ref: '#/components/schemas/CrupdateBook'  # Utilisation de l'héritage pour éviter la redondance
+    Author: 
       type: object
       properties:
-        id:
+        ID:
+          type: integer
+        Name:
           type: string
-        name:
-          type: string
-        sex:
+        Sex:
           type: string
           enum:
             - M
