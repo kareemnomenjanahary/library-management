@@ -1,22 +1,18 @@
 openapi: 3.0.3
 info:
   title: Library API
-  version: 1.1.0 
+  version: 1.1.0
   description: STD22001
 servers:
   - url: https://library.com
-tags:
-  - Books
-  - Authors
-  - Topics
 
 paths:
   /books:
     get:
-      summary: Get all books with pagination
-      description: Retrieve a list of books with pagination support.
       tags:
         - Books
+      summary: Get all books with pagination
+      description: Retrieve a list of books with pagination support
       operationId: getBooks
       parameters:
         - in: query
@@ -63,6 +59,8 @@ paths:
                 items:
                   $ref: '#/components/schemas/Book'
     put:
+      tags:
+        - Books
       summary: Create or update a list of books
       operationId: crupdateBooks
       requestBody:
@@ -71,7 +69,7 @@ paths:
             schema:
               type: array
               items:
-                $ref: '#/components/schemas/Book'
+                $ref: '#/components/schemas/CrupdateBook'
       responses:
         200:
           description: The list of created or updated books
@@ -84,10 +82,10 @@ paths:
 
   /authors:
     get:
-      summary: Get all authors with pagination
-      description: Retrieve a list of authors with pagination support.
       tags:
         - Authors
+      summary: Get all authors with pagination
+      description: Retrieve a list of authors with pagination support
       operationId: getAuthors
       parameters:
         - in: query
@@ -122,8 +120,10 @@ paths:
 
   /topics:
     get:
-      summary: Get all topics
-      description: Get a list of topics.
+      tags:
+        - Topics
+      summary: Get all topics with pagination
+      description: Retrieve a list of topics with pagination support
       operationId: getTopics
       parameters:
         - in: query
@@ -132,129 +132,26 @@ paths:
           required: false
           schema:
             type: string
+        - in: query
+          name: page
+          description: Page number for pagination
+          required: false
+          schema:
+            type: integer
+            default: 1
+        - in: query
+          name: pageSize
+          description: Number of items per page
+          required: false
+          schema:
+            type: integer
+            default: 50
       responses:
         200:
-          description: The list of topics
+          description: The list of filtered topics
           content:
             application/json:
               schema:
                 type: array
                 items:
                   $ref: '#/components/schemas/Topic'
-    put:
-      summary: Create or update a topic
-      operationId: createUpdateTopic
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Topic'
-      responses:
-        200:
-          description: The topic has been created or updated successfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Topic'
-    delete:
-      summary: Delete a topic
-      operationId: deleteTopic
-      parameters:
-        - in: path
-          name: topicId
-          description: The ID of the topic to delete
-          required: true
-          schema:
-            type: integer
-      responses:
-        204:
-          description: Topic deleted successfully
-
-  /books/{bookId}/topics/{topicId}:
-    put:
-      summary: Attach a topic to a book by specifying their IDs
-      operationId: attachTopicToBook
-      parameters:
-        - in: path
-          name: bookId
-          description: The ID of the book to update
-          required: true
-          schema:
-            type: string
-            format: uuid
-        - in: path
-          name: topicId
-          description: The ID of the topic to attach
-          required: true
-          schema:
-            type: integer
-      responses:
-        200:
-          description: Topic attached to the book successfully
-
-  /books/topics:
-    put:
-      summary: Attach topics to books using a list of UpdateBookTopic objects
-      operationId: attachTopicsToBooks
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: array
-              items:
-                $ref: '#/components/schemas/UpdateBookTopic'
-      responses:
-        200:
-          description: Topics attached to books successfully
-
-components:
-  schemas:
-    CrupdateBook:
-      type: object
-      properties:
-        ID:
-          type: integer
-        bookName:
-          type: string
-        author:
-          $ref: '#/components/schemas/Author'
-        pageNumbers:
-          type: integer
-        topic:
-          type: string
-          enum:
-            - ROMANCE
-            - COMEDY
-            - OTHER
-        releaseDate:
-          type: string
-    Book:
-      allOf:
-        - $ref: '#/components/schemas/CrupdateBook'
-    Author:
-      type: object
-      properties:
-        ID:
-          type: integer
-        Name:
-          type: string
-        Sex:
-          type: string
-          enum:
-            - M
-            - F
-    Topic:
-      type: object
-      properties:
-        id:
-          type: integer
-        topicName:
-          type: string
-    UpdateBookTopic:
-      type: object
-      properties:
-        bookId:
-          type: string
-          format: uuid
-        topicId:
-          type: integer
