@@ -27,14 +27,11 @@ paths:
             type: string
             format: date
       responses:
-        200:
-          description: The list of filtered books
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Book'
+        '200':
+          $ref: '#/components/responses/Response200'
+        '400':
+          $ref: '#/components/responses/Response400'
+
     put:
       summary: Create or update a list of books
       operationId: createUpdateBooks
@@ -46,14 +43,11 @@ paths:
               items:
                 $ref: '#/components/schemas/Book'
       responses:
-        200:
-          description: The list of created or updated books
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Book'
+        '200':
+          $ref: '#/components/responses/Response200'
+        '400':
+          $ref: '#/components/responses/Response400'
+
   /books/{bookId}/authors/{authorId}:
     put:
       tags:
@@ -75,8 +69,11 @@ paths:
           schema:
             type: string
       responses:
-        200:
-          description: Author successfully attached to the book
+        '200':
+          $ref: '#/components/responses/Response200'
+        '400':
+          $ref: '#/components/responses/Response400'
+
   /authors:
     get:
       summary: Get all authors
@@ -91,14 +88,11 @@ paths:
           schema:
             type: string
       responses:
-        200:
-          description: The list of filtered authors
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Author'
+        '200':
+          $ref: '#/components/responses/Response200'
+        '400':
+          $ref: '#/components/responses/Response400'
+
     put:
       summary: Create or update authors
       operationId: createUpdateAuthors
@@ -110,20 +104,20 @@ paths:
               items:
                 $ref: '#/components/schemas/Author'
       responses:
-        200:
-          description: The list of created or updated authors
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Author'
+        '200':
+          $ref: '#/components/responses/Response200'
+        '400':
+          $ref: '#/components/responses/Response400'
+
     delete:
       summary: Delete authors
       operationId: deleteAuthors
       responses:
-        200:
-          description: Authors successfully deleted
+        '200':
+          $ref: '#/components/responses/Response200'
+        '400':
+          $ref: '#/components/responses/Response400'
+
   /books/authors:
     put:
       tags:
@@ -140,15 +134,64 @@ paths:
               items:
                 $ref: "#/components/schemas/UpdateBookAuthor"
       responses:
-        200:
-          description: Authors successfully attached to the books
+        '200':
+          $ref: '#/components/responses/Response200'
+        '400':
+          $ref: '#/components/responses/Response400'
 
 components:
   parameters:
     queryPagination:
-      $ref: '#/components/parameters/queryPagination'
+      name: page
+      in: query
+      description: Number of the page
+      schema:
+        type: integer
+        default: 1
     pathPagination:
-      $ref: '#/components/parameters/pathPagination'
+      name: page
+      required: true
+      in: path
+      description: number of the page
+      schema: 
+        type: integer
+        default: 1
+
+  responses:
+    Response200:
+      description: Default response structure for 200 status
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                  message:
+                    type: string
+              body:
+                type: object
+
+    Response400:
+      description: Default response structure for 400 status
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                  message:
+                    type: string
+              body:
+                type: object
+
   schemas:
     Book:
       $ref: '#/components/schemas/Book'
