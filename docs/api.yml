@@ -41,7 +41,7 @@ paths:
             schema:
               type: array
               items:
-                $ref: '#/components/schemas/Book'
+                $ref: '#/components/schemas/crupdateBooks'
       responses:
         '200':
           $ref: '#/components/responses/Response200'
@@ -139,6 +139,42 @@ paths:
         '400':
           $ref: '#/components/responses/Response400'
 
+  /books/import:
+    post:
+      summary: Import books
+      description: Import a list of books. The server will generate IDs for the books.
+      operationId: importBooks
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/Book'
+      responses:
+        '200':
+          $ref: '#/components/responses/Response200'
+        '400':
+          $ref: '#/components/responses/Response400'
+
+  /authors/import:
+    post:
+      summary: Import authors
+      description: Import a list of authors. The server will generate IDs for the authors.
+      operationId: importAuthors
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/Author'
+      responses:
+        '200':
+          $ref: '#/components/responses/Response200'
+        '400':
+          $ref: '#/components/responses/Response400'
+
 components:
   parameters:
     queryPagination:
@@ -194,10 +230,37 @@ components:
 
   schemas:
     Book:
-      $ref: '#/components/schemas/Book'
+      type: object
+      properties:
+        bookName:
+          type: string
+        author:
+          type: string
+        pageNumbers:
+          type: integer
+        topic:
+          type: string
+        releaseDate:
+          type: string
+          format: date
+        idAuthor:
+          type: string
+
     crupdateBooks:
-      $ref: '#/components/schemas/crupdateBooks'
+      $ref: '#/components/schemas/Book'
+
     UpdateBookAuthor:
-      $ref: '#/components/schemas/UpdateBookAuthor'
+      type: object
+      properties:
+        bookId:
+          type: string
+        authorId:
+          type: string
+
     Author:
-      $ref: '#/components/schemas/Author'
+      type: object
+      properties:
+        authorName:
+          type: string
+        sex:
+          type: string
