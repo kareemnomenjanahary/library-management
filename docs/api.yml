@@ -41,7 +41,9 @@ paths:
             schema:
               type: array
               items:
-                $ref: '#/components/schemas/crupdateBooks'
+                oneOf:
+                  - $ref: '#/components/schemas/ImportBookJSON'
+                  - $ref: '#/components/schemas/ImportBookExcel'
       responses:
         '200':
           $ref: '#/components/responses/Response200'
@@ -102,7 +104,9 @@ paths:
             schema:
               type: array
               items:
-                $ref: '#/components/schemas/Author'
+                oneOf:
+                  - $ref: '#/components/schemas/ImportAuthorJSON'
+                  - $ref: '#/components/schemas/ImportAuthorExcel'
       responses:
         '200':
           $ref: '#/components/responses/Response200'
@@ -142,7 +146,6 @@ paths:
   /books/import:
     post:
       summary: Import books
-      description: Import a list of books. The server will generate IDs for the books.
       operationId: importBooks
       requestBody:
         content:
@@ -150,7 +153,9 @@ paths:
             schema:
               type: array
               items:
-                $ref: '#/components/schemas/Book'
+                oneOf:
+                  - $ref: '#/components/schemas/ImportBookJSON'
+                  - $ref: '#/components/schemas/ImportBookExcel'
       responses:
         '200':
           $ref: '#/components/responses/Response200'
@@ -160,7 +165,6 @@ paths:
   /authors/import:
     post:
       summary: Import authors
-      description: Import a list of authors. The server will generate IDs for the authors.
       operationId: importAuthors
       requestBody:
         content:
@@ -168,7 +172,9 @@ paths:
             schema:
               type: array
               items:
-                $ref: '#/components/schemas/Author'
+                oneOf:
+                  - $ref: '#/components/schemas/ImportAuthorJSON'
+                  - $ref: '#/components/schemas/ImportAuthorExcel'
       responses:
         '200':
           $ref: '#/components/responses/Response200'
@@ -199,68 +205,43 @@ components:
       content:
         application/json:
           schema:
-            type: object
-            properties:
-              status:
-                type: object
-                properties:
-                  code:
-                    type: integer
-                  message:
-                    type: string
-              body:
-                type: object
+            $ref: '#/components/schemas/CommonResponse'
 
     Response400:
       description: Default response structure for 400 status
       content:
         application/json:
           schema:
-            type: object
-            properties:
-              status:
-                type: object
-                properties:
-                  code:
-                    type: integer
-                  message:
-                    type: string
-              body:
-                type: object
+            $ref: '#/components/schemas/CommonResponse'
 
   schemas:
     Book:
-      type: object
-      properties:
-        bookName:
-          type: string
-        author:
-          type: string
-        pageNumbers:
-          type: integer
-        topic:
-          type: string
-        releaseDate:
-          type: string
-          format: date
-        idAuthor:
-          type: string
-
-    crupdateBooks:
       $ref: '#/components/schemas/Book'
-
+    crupdateBooks:
+      $ref: '#/components/schemas/crupdateBooks'
     UpdateBookAuthor:
-      type: object
-      properties:
-        bookId:
-          type: string
-        authorId:
-          type: string
-
+      $ref: '#/components/schemas/UpdateBookAuthor'
+    ImportBookJSON:
+      $ref: '#/components/schemas/ImportBookJSON'
+    ImportBookExcel:
+      $ref: '#/components/schemas/ImportBookExcel'
+    ImportAuthorJSON:
+      $ref: '#/components/schemas/ImportAuthorJSON'
+    ImportAuthorExcel:
+      $ref: '#/components/schemas/ImportAuthorExcel'
     Author:
+      $ref: '#/components/schemas/Author'
+    ImportAuthor:
+      $ref: '#/components/schemas/ImportAuthor'
+    CommonResponse:
       type: object
       properties:
-        authorName:
-          type: string
-        sex:
-          type: string
+        status:
+          type: object
+          properties:
+            code:
+              type: integer
+            message:
+              type: string
+        body:
+          type: object
